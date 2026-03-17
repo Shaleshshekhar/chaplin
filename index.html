@@ -15,14 +15,32 @@
       font-family: sans-serif;
     }
 
-    /* ---- MUTE BUTTON ---- */
-    #muteButton {
+    /* ---- MUTE BUTTON WRAPPER (GLASS) ---- */
+    #muteWrapper {
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 50px;
-      height: 50px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
       z-index: 20;
+    }
+
+    #muteButton {
+      width: 26px;
+      height: 26px;
       cursor: pointer;
     }
 
@@ -44,25 +62,51 @@
       width: 52%;
     }
 
+    /* GLASS PLATE */
+    #glassPlate {
+      position: absolute;
+      inset: -10px;
+
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+
+      z-index: 0;
+    }
+
     #scanTarget img {
+      position: relative;
       width: 100%;
       display: block;
       opacity: 0.65;
+      z-index: 1;
     }
 
-    /* ---- SCAN FRAME ---- */
+    /* ---- FRAME ---- */
     #scanFrame {
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 2;
     }
 
     .corner {
       position: absolute;
       width: 28px;
       height: 28px;
+
       border: 2px solid rgba(255,255,255,0.9);
-      box-shadow: 0 0 8px rgba(255,255,255,0.5);
+
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(4px);
+
+      box-shadow:
+        0 0 8px rgba(255,255,255,0.5),
+        inset 0 0 6px rgba(255,255,255,0.2);
+
       animation: cornerPulse 2s ease-in-out infinite;
     }
 
@@ -99,7 +143,7 @@
       50% { opacity: 1; }
     }
 
-    /* ---- SCAN TEXT ---- */
+    /* ---- TEXT ---- */
     #scanText {
       position: absolute;
       bottom: 7%;
@@ -112,21 +156,16 @@
       color: white;
       font-size: 16px;
       font-weight: 500;
-      letter-spacing: 0.4px;
 
-      background: rgba(255, 255, 255, 0.10);
+      background: rgba(255,255,255,0.10);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
 
-      border: 1px solid rgba(255, 255, 255, 0.2);
-
+      border: 1px solid rgba(255,255,255,0.2);
       box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-
-      text-align: center;
-      white-space: nowrap;
     }
 
-    /* ---- SWEEP ANIMATION ---- */
+    /* ---- SWEEP ---- */
     #sweep {
       position: absolute;
       width: 100%;
@@ -141,15 +180,13 @@
     }
 
     @keyframes sweepAnim {
-      0%   { transform: translateY(-100%); }
+      0% { transform: translateY(-100%); }
       100% { transform: translateY(100%); }
     }
 
     /* ---- MOBILE ---- */
     @media (max-width: 600px) {
-      #scanTarget {
-        width: 70%;
-      }
+      #scanTarget { width: 70%; }
 
       .corner {
         width: 22px;
@@ -160,16 +197,28 @@
         font-size: 14px;
         padding: 10px 16px;
       }
+
+      #muteWrapper {
+        width: 48px;
+        height: 48px;
+      }
+
+      #muteButton {
+        width: 22px;
+        height: 22px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ---- CUSTOM SCAN UI ---- -->
+  <!-- SCAN UI -->
   <div id="scanOverlay">
 
     <div id="scanTarget">
+      <div id="glassPlate"></div>
+
       <img src="assets/target-overlay.jpg" />
 
       <div id="scanFrame">
@@ -181,15 +230,15 @@
     </div>
 
     <div id="scanText">Scan the artwork</div>
-
     <div id="sweep"></div>
-
   </div>
 
-  <!-- ---- MUTE BUTTON ---- -->
-  <img id="muteButton" src="assets/icons/mute.png" />
+  <!-- AUDIO BUTTON -->
+  <div id="muteWrapper" style="display:none;">
+    <img id="muteButton" src="assets/icons/mute.png" />
+  </div>
 
-  <!-- ---- AR SCENE ---- -->
+  <!-- AR SCENE -->
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind; uiScanning: no; uiLoading: no; uiError: no;"
     color-space="sRGB"
@@ -228,35 +277,32 @@
     const video = document.querySelector("#video");
     const target = document.querySelector("#target");
     const muteBtn = document.querySelector("#muteButton");
+    const muteWrapper = document.querySelector("#muteWrapper");
     const scanOverlay = document.querySelector("#scanOverlay");
 
     let hideTimeout = null;
 
-    // INITIAL
     video.muted = true;
-    muteBtn.style.display = "none";
+    muteWrapper.style.display = "none";
 
-    // TARGET FOUND
     target.addEventListener("targetFound", () => {
       scanOverlay.style.display = "none";
 
       muteBtn.src = "assets/icons/mute.png";
-      muteBtn.style.display = "block";
+      muteWrapper.style.display = "flex";
 
       video.play();
     });
 
-    // TARGET LOST
     target.addEventListener("targetLost", () => {
       scanOverlay.style.display = "flex";
 
       video.pause();
 
-      muteBtn.style.display = "none";
+      muteWrapper.style.display = "none";
       clearTimeout(hideTimeout);
     });
 
-    // CLICK AUDIO
     muteBtn.addEventListener("click", () => {
       video.muted = false;
       muteBtn.src = "assets/icons/unmute.png";
@@ -264,16 +310,14 @@
       clearTimeout(hideTimeout);
 
       hideTimeout = setTimeout(() => {
-        muteBtn.style.display = "none";
+        muteWrapper.style.display = "none";
       }, 3000);
     });
 
-    // LOOP SAFETY
     video.addEventListener("ended", () => {
       video.play();
     });
 
-    // MOBILE AUTOPLAY FIX
     document.body.addEventListener("click", () => {
       video.play().catch(() => {});
     });
