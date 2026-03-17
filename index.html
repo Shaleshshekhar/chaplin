@@ -32,18 +32,7 @@
   <!-- Mute / Unmute Button -->
   <img id="muteButton" src="assets/icons/mute.png" />
 
-  <!-- Video Asset -->
-  <video
-    id="video"
-    src="assets/video.mp4"
-    preload="auto"
-    loop
-    playsinline
-    webkit-playsinline
-    muted
-    crossorigin="anonymous"
-  ></video>
-
+  
   <!-- AR Scene -->
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind;"
@@ -53,7 +42,17 @@
     device-orientation-permission-ui="enabled: false"
   >
 
-    <a-assets></a-assets>
+    <a-assets><!-- Video Asset -->
+  <video
+    id="video"
+    src="assets/video.mp4"
+    preload="auto"
+    loop
+    playsinline
+    webkit-playsinline
+    muted
+    crossorigin="anonymous"
+  ></video></a-assets>
 
     <!-- Camera -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
