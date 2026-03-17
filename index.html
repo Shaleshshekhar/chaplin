@@ -4,10 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>WebAR Experience</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <link rel="stylesheet" href="styles.css" />
@@ -15,21 +12,11 @@
 
 <body style="margin: 0; overflow: hidden;">
 
-  <!-- UI Overlay -->
+  <!-- UI -->
   <div id="ui">
     <div id="scanText">Scan artwork</div>
     <img id="audioIcon" src="assets/icons/unmute.png" />
   </div>
-
-  <!-- Video Asset -->
-  <video
-    id="video"
-    src="assets/video.mp4"
-    playsinline
-    webkit-playsinline
-    muted
-    crossorigin="anonymous"
-  ></video>
 
   <!-- AR Scene -->
   <a-scene
@@ -40,9 +27,18 @@
     renderer="colorManagement: true, physicallyCorrectLights"
   >
 
-    <a-assets></a-assets>
+    <a-assets>
+      <video
+        id="video"
+        src="assets/video.mp4"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        muted
+        crossorigin="anonymous"
+      ></video>
+    </a-assets>
 
-    <!-- Camera -->
     <a-camera
       position="0 0 0"
       look-controls="enabled: false"
@@ -50,9 +46,7 @@
       raycaster="objects: .clickable"
     ></a-camera>
 
-    <!-- Target -->
     <a-entity mindar-image-target="targetIndex: 0">
-
       <a-video
         id="videoPlane"
         class="clickable"
@@ -62,7 +56,6 @@
         position="0 0 0"
         material="opacity: 0"
       ></a-video>
-
     </a-entity>
 
   </a-scene>
