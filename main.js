@@ -85,7 +85,9 @@ document.querySelector("a-scene").addEventListener("renderstart", () => {
 // --------------------
 // AUDIO CONTROL
 // --------------------
-muteBtn.addEventListener("click", () => {
+
+muteBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🔥 important
 
   video.muted = false;
   audioUnlocked = true;
@@ -95,7 +97,6 @@ muteBtn.addEventListener("click", () => {
   setTimeout(() => {
     muteBtn.style.opacity = 0;
   }, 5000);
-
 });
 
 function showMuteIcon() {
@@ -111,7 +112,9 @@ video.addEventListener("ended", () => {
   replayBtn.style.opacity = 1;
 });
 
-replayBtn.addEventListener("click", () => {
+replayBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🔥 important
+
   video.currentTime = 0;
   video.play();
   replayBtn.style.opacity = 0;
