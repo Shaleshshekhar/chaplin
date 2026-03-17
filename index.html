@@ -26,12 +26,11 @@
 </div>
 
 <a-scene
-  mindar-image="imageTargetSrc: assets/targets.mind;"
   embedded
-  color-space="sRGB"
-  renderer="colorManagement: true, physicallyCorrectLights"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true;"
+  mindar-image="imageTargetSrc: assets/targets.mind;"
 >
 
   <a-assets>
