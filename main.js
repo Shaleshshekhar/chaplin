@@ -4,19 +4,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const scanText = document.getElementById("scanText");
   const audioIcon = document.getElementById("audioIcon");
 
-  const sceneEl = document.querySelector("a-scene");
   const target = document.querySelector("[mindar-image-target]");
 
   // STATE
   let audioUnlocked = false;
   let hasEnded = false;
-  let isTargetVisible = false;
   let iconTimeout = null;
 
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isAndroid = /Android/i.test(navigator.userAgent);
 
-  // ----------- UI HELPERS -----------
+  // -------- UI HELPERS --------
 
   const showIcon = () => {
     audioIcon.style.opacity = 1;
@@ -32,33 +30,28 @@ document.addEventListener("DOMContentLoaded", () => {
       : "assets/icons/mute.png";
   };
 
-  // ----------- VIDEO FADE -----------
+  // -------- VIDEO FADE --------
 
   const fadeInVideo = () => {
     let opacity = 0;
     const interval = setInterval(() => {
       opacity += 0.08;
       videoPlane.setAttribute("material", "opacity", opacity);
-
       if (opacity >= 1) clearInterval(interval);
     }, 30);
   };
 
-  // ----------- TARGET EVENTS -----------
+  // -------- TARGET EVENTS --------
 
   target.addEventListener("targetFound", () => {
-    isTargetVisible = true;
-
     scanText.innerText = "Ready";
 
     setTimeout(() => {
       scanText.classList.add("hidden");
     }, 2500);
 
-    // Haptic feedback
     if (navigator.vibrate) navigator.vibrate(50);
 
-    // Resume video (no restart)
     if (!hasEnded) {
       video.play().catch(() => {});
     } else {
@@ -69,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fadeInVideo();
 
-    // Show icon if muted
     if (video.muted) {
       showIcon();
       updateIcon();
@@ -77,17 +69,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   target.addEventListener("targetLost", () => {
-    isTargetVisible = false;
     video.pause();
   });
 
-  // ----------- VIDEO EVENTS -----------
+  // -------- VIDEO EVENTS --------
 
   video.addEventListener("ended", () => {
     hasEnded = true;
   });
 
-  // ----------- AUDIO UNLOCK -----------
+  // -------- AUDIO UNLOCK --------
 
   const unlockAudio = () => {
     if (audioUnlocked) return;
@@ -101,20 +92,18 @@ document.addEventListener("DOMContentLoaded", () => {
       clearTimeout(iconTimeout);
       iconTimeout = setTimeout(hideIcon, 3000);
     }).catch(() => {
-      // fallback → keep muted
       video.muted = true;
       showIcon();
       updateIcon();
     });
   };
 
-  // Android attempt on first interaction
   if (isAndroid) {
     window.addEventListener("mousedown", unlockAudio, { once: true });
     window.addEventListener("touchstart", unlockAudio, { once: true });
   }
 
-  // ----------- ICON CLICK -----------
+  // -------- ICON INTERACTION --------
 
   audioIcon.addEventListener("mousedown", () => {
     video.muted = !video.muted;
@@ -129,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ----------- INITIAL STATE -----------
+  // -------- INITIAL STATE --------
 
   video.muted = true;
   updateIcon();
