@@ -1,139 +1,136 @@
-const video = document.querySelector("#video");
-const videoPlane = document.querySelector("#videoPlane");
-const muteBtn = document.querySelector("#muteBtn");
-const replayBtn3D = document.querySelector("#replayBtn3D");
+document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("video");
+  const videoPlane = document.getElementById("videoPlane");
+  const scanText = document.getElementById("scanText");
+  const audioIcon = document.getElementById("audioIcon");
 
-const scanMsg = document.getElementById("scan-message");
-const scanEffect = document.getElementById("scan-effect");
-
-let audioUnlocked = false;
-let hasEnded = false;
-
-// --------------------
-// VIDEO SIZE (AUTO FIT)
-// --------------------
-video.addEventListener("loadedmetadata", () => {
-
-  const ratio = video.videoHeight / video.videoWidth;
-
-  videoPlane.setAttribute("width", 1);
-  videoPlane.setAttribute("height", ratio);
-
-});
-
-// --------------------
-// TARGET EVENTS
-// --------------------
-document.querySelector("a-scene").addEventListener("renderstart", () => {
-
+  const sceneEl = document.querySelector("a-scene");
   const target = document.querySelector("[mindar-image-target]");
 
+  // STATE
+  let audioUnlocked = false;
+  let hasEnded = false;
+  let isTargetVisible = false;
+  let iconTimeout = null;
+
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  // ----------- UI HELPERS -----------
+
+  const showIcon = () => {
+    audioIcon.style.opacity = 1;
+  };
+
+  const hideIcon = () => {
+    audioIcon.style.opacity = 0;
+  };
+
+  const updateIcon = () => {
+    audioIcon.src = video.muted
+      ? "assets/icons/unmute.png"
+      : "assets/icons/mute.png";
+  };
+
+  // ----------- VIDEO FADE -----------
+
+  const fadeInVideo = () => {
+    let opacity = 0;
+    const interval = setInterval(() => {
+      opacity += 0.08;
+      videoPlane.setAttribute("material", "opacity", opacity);
+
+      if (opacity >= 1) clearInterval(interval);
+    }, 30);
+  };
+
+  // ----------- TARGET EVENTS -----------
+
   target.addEventListener("targetFound", () => {
+    isTargetVisible = true;
 
-    console.log("TARGET FOUND");
-
-    // UI
-    scanEffect.style.display = "none";
-    scanMsg.innerText = "Ready";
+    scanText.innerText = "Ready";
 
     setTimeout(() => {
-      scanMsg.style.opacity = 0;
-    }, 3000);
+      scanText.classList.add("hidden");
+    }, 2500);
 
-    // Haptic
+    // Haptic feedback
     if (navigator.vibrate) navigator.vibrate(50);
 
-    // Resume video (DON'T reset unless ended)
-    video.muted = !audioUnlocked;
-
+    // Resume video (no restart)
     if (!hasEnded) {
+      video.play().catch(() => {});
+    } else {
+      video.currentTime = 0;
       video.play();
+      hasEnded = false;
     }
 
-    // Show video
-    videoPlane.setAttribute("material", "opacity: 1");
+    fadeInVideo();
 
-    // Force texture update (important)
-    video.addEventListener('play', () => {
-      const mesh = videoPlane.getObject3D('mesh');
-      if (mesh && mesh.material.map) {
-        mesh.material.map.needsUpdate = true;
-      }
-    });
-
-    showMuteIcon();
-
+    // Show icon if muted
+    if (video.muted) {
+      showIcon();
+      updateIcon();
+    }
   });
 
   target.addEventListener("targetLost", () => {
+    isTargetVisible = false;
     video.pause();
   });
 
-});
+  // ----------- VIDEO EVENTS -----------
 
-// --------------------
-// AUDIO UNLOCK
-// --------------------
-muteBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-
-  video.muted = false;
-
-  const playPromise = video.play();
-
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      console.log("Audio unlocked");
-    }).catch(() => {
-      console.log("Audio failed");
-    });
-  }
-
-  audioUnlocked = true;
-
-  muteBtn.src = "assets/icons/unmute.png";
-
-  setTimeout(() => {
-    muteBtn.style.opacity = 0;
-  }, 5000);
-});
-
-function showMuteIcon() {
-  if (!audioUnlocked) {
-    muteBtn.style.opacity = 1;
-  }
-}
-
-// --------------------
-// VIDEO END → SHOW REPLAY
-// --------------------
-video.addEventListener("ended", () => {
-  hasEnded = true;
-
-  replayBtn3D.setAttribute("visible", true);
-
-  // Optional pop animation
-  replayBtn3D.setAttribute("animation__scale", {
-    property: "scale",
-    from: "0 0 0",
-    to: "1 1 1",
-    dur: 200,
-    easing: "easeOutBack"
+  video.addEventListener("ended", () => {
+    hasEnded = true;
   });
-});
 
-// --------------------
-// REPLAY BUTTON CLICK (FIXED)
-// --------------------
-replayBtn3D.addEventListener("mousedown", (e) => {
-  e.stopPropagation();
+  // ----------- AUDIO UNLOCK -----------
 
-  console.log("Replay clicked");
+  const unlockAudio = () => {
+    if (audioUnlocked) return;
 
-  video.currentTime = 0;
-  video.play();
+    video.muted = false;
 
-  hasEnded = false;
+    video.play().then(() => {
+      audioUnlocked = true;
+      updateIcon();
 
-  replayBtn3D.setAttribute("visible", false);
+      clearTimeout(iconTimeout);
+      iconTimeout = setTimeout(hideIcon, 3000);
+    }).catch(() => {
+      // fallback → keep muted
+      video.muted = true;
+      showIcon();
+      updateIcon();
+    });
+  };
+
+  // Android attempt on first interaction
+  if (isAndroid) {
+    window.addEventListener("mousedown", unlockAudio, { once: true });
+    window.addEventListener("touchstart", unlockAudio, { once: true });
+  }
+
+  // ----------- ICON CLICK -----------
+
+  audioIcon.addEventListener("mousedown", () => {
+    video.muted = !video.muted;
+
+    updateIcon();
+
+    if (!video.muted) {
+      audioUnlocked = true;
+
+      clearTimeout(iconTimeout);
+      iconTimeout = setTimeout(hideIcon, 3000);
+    }
+  });
+
+  // ----------- INITIAL STATE -----------
+
+  video.muted = true;
+  updateIcon();
 });
