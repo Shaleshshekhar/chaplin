@@ -90,6 +90,50 @@
       0%   { transform: translateY(-100%); }
       100% { transform: translateY(100%); }
     }
+    /* ---- SCAN FRAME ---- */
+#scanFrame {
+  position: absolute;
+  width: 60%;   /* match your image width */
+  aspect-ratio: 1 / 1.4; /* adjust if needed to match artwork */
+  pointer-events: none;
+}
+
+/* base corner style */
+.corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(255,255,255,0.8);
+}
+
+/* remove inner sides to create L-shape */
+.corner.tl {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner.tr {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner.bl {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+}
+
+.corner.br {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
   </style>
 </head>
 
@@ -97,8 +141,14 @@
 
   <!-- ---- CUSTOM SCAN UI ---- -->
   <div id="scanOverlay">
-    <img src="assets/target-overlay.jpg" />
-    <div id="scanText">Scan the artwork to view experience</div>
+    <img src="assets/target-overlay.jpg" />    
+  <div id="scanFrame">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+  </div>
+    <div id="scanText">Scan the artwork</div>
     <div id="sweep"></div>
   </div>
 
