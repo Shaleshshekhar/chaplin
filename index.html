@@ -14,7 +14,31 @@
       overflow: hidden;
       font-family: sans-serif;
     }
+/* ---- SCAN TEXT (GLASS UI) ---- */
+#scanText {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
 
+  padding: 10px 18px;
+  border-radius: 14px;
+
+  color: white;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+  text-align: center;
+  white-space: nowrap;
+}
     /* ---- MUTE BUTTON ---- */
     #muteButton {
       position: absolute;
@@ -40,10 +64,14 @@
 
     #scanOverlay img {
       width: 60%;
-      opacity: 0.7; /* 20% transparency */
+      opacity: 0.7;
     }
-
-    /* ---- SWEEP ANIMATION ---- */
+    @media (max-width: 600px) {
+  #scanText {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+}
     /* ---- SWEEP ANIMATION ---- */
     #sweep {
       position: absolute;
@@ -70,6 +98,7 @@
   <!-- ---- CUSTOM SCAN UI ---- -->
   <div id="scanOverlay">
     <img src="assets/target-overlay.jpg" />
+    <div id="scanText">Scan the artwork to view experience</div>
     <div id="sweep"></div>
   </div>
 
