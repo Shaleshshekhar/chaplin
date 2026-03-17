@@ -1,13 +1,22 @@
 const video = document.querySelector("#video");
+const videoPlane = document.querySelector("#videoPlane");
 const muteBtn = document.querySelector("#muteBtn");
-const replayBtn = document.querySelector("#replayBtn");
+const replayBtn3D = document.querySelector("#replayBtn3D");
+
 const scanMsg = document.getElementById("scan-message");
 const scanEffect = document.getElementById("scan-effect");
 
-const glow = document.querySelector("#glow");
-const videoPlane = document.querySelector("#videoPlane");
-
 let audioUnlocked = false;
+let hasEnded = false;
+
+// --------------------
+// VIDEO SIZE FIX
+// --------------------
+video.addEventListener("loadedmetadata", () => {
+  const ratio = video.videoHeight / video.videoWidth;
+  videoPlane.setAttribute("width", 1);
+  videoPlane.setAttribute("height", ratio);
+});
 
 // --------------------
 // TARGET EVENTS
@@ -17,63 +26,27 @@ document.querySelector("a-scene").addEventListener("renderstart", () => {
   const target = document.querySelector("[mindar-image-target]");
 
   target.addEventListener("targetFound", () => {
-    
-  video.currentTime = 0;
-  video.play();
-  
-  video.addEventListener('play', () => {
-    videoPlane.components.material.material.map.needsUpdate = true;
-  });
-    // UI updates
+
     scanEffect.style.display = "none";
     scanMsg.innerText = "Ready";
 
     setTimeout(() => {
       scanMsg.style.opacity = 0;
-    }, 1500);
+    }, 3000);
 
-    // Haptic feedback
     if (navigator.vibrate) navigator.vibrate(50);
 
-    // Glow animation
-    glow.setAttribute("animation__glow", {
-      property: "opacity",
-      from: 0,
-      to: 0.35,
-      dur: 200,
-      easing: "easeOutQuad"
-    });
+    // Resume video (DO NOT RESET)
+    video.muted = !audioUnlocked;
 
-    // Lock-in pulse
-    videoPlane.setAttribute("animation__scale", {
-      property: "scale",
-      from: "0.95 0.95 1",
-      to: "1 1 1",
-      dur: 200,
-      easing: "easeOutBack"
-    });
+    if (!hasEnded) {
+      video.play();
+    }
 
-    videoPlane.setAttribute("animation__pulse", {
-      property: "scale",
-      to: "1.03 1.03 1",
-      dir: "alternate",
-      loop: 2,
-      dur: 120
-    });
-
-    // Fade in video
-    videoPlane.setAttribute("animation__fade", {
-      property: "material.opacity",
-      from: 0,
-      to: 1,
-      dur: 200
-    });
-
-    // Play video muted
-    video.muted = true;
-    video.play();
+    videoPlane.setAttribute("material", "opacity: 1");
 
     showMuteIcon();
+
   });
 
   target.addEventListener("targetLost", () => {
@@ -83,13 +56,17 @@ document.querySelector("a-scene").addEventListener("renderstart", () => {
 });
 
 // --------------------
-// AUDIO CONTROL
+// AUDIO UNLOCK
 // --------------------
-
 muteBtn.addEventListener("click", (e) => {
-  e.stopPropagation(); // 🔥 important
+  e.stopPropagation();
 
   video.muted = false;
+
+  video.play().then(() => {
+    console.log("Audio unlocked");
+  });
+
   audioUnlocked = true;
 
   muteBtn.src = "assets/icons/unmute.png";
@@ -106,16 +83,24 @@ function showMuteIcon() {
 }
 
 // --------------------
-// VIDEO END → REPLAY
+// VIDEO END
 // --------------------
 video.addEventListener("ended", () => {
-  replayBtn.style.opacity = 1;
+  hasEnded = true;
+
+  replayBtn3D.setAttribute("visible", true);
 });
 
-replayBtn.addEventListener("click", (e) => {
-  e.stopPropagation(); // 🔥 important
+// --------------------
+// REPLAY BUTTON (3D)
+// --------------------
+replayBtn3D.addEventListener("click", (e) => {
+  e.stopPropagation();
 
   video.currentTime = 0;
   video.play();
-  replayBtn.style.opacity = 0;
+
+  hasEnded = false;
+
+  replayBtn3D.setAttribute("visible", false);
 });
