@@ -8,6 +8,13 @@ html, body {
   background: black;
 }
 
+/* Ensure AR canvas fills screen correctly */
+canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+}
+
 /* UI Overlay */
 #ui {
   position: fixed;
@@ -18,24 +25,29 @@ html, body {
   pointer-events: none;
 }
 
-/* Scan Text */
+/* Scan Text (FIXED WIDTH ISSUE) */
 #scanText {
   position: absolute;
   bottom: 30%;
-  width: 100%;
-  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+
   color: white;
   font-size: 18px;
   letter-spacing: 0.5px;
 
   padding: 10px 20px;
-  display: inline-block;
 
   backdrop-filter: blur(10px);
   background: rgba(255,255,255,0.1);
   border-radius: 12px;
 
   transition: opacity 0.6s ease;
+
+  display: inline-block;
+  width: auto;
+  max-width: 80%;
+  text-align: center;
 }
 
 /* Audio Icon */
