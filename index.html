@@ -1,79 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>WebAR Experience</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
+  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
 
-<!-- UI -->
-<div id="ui">
-  <div id="scan-message">Scan artwork</div>
-  <div id="scan-effect"></div>
+  <!-- UI Overlay -->
+  <div id="ui">
+    <div id="scanText">Scan artwork</div>
+    <img id="audioIcon" src="assets/icons/unmute.png" />
+  </div>
 
-  <!-- Screen-space mute -->
-  <img id="muteBtn" src="assets/icons/mute.png">
-</div>
+  <!-- Video Asset -->
+  <video
+    id="video"
+    src="assets/video.mp4"
+    playsinline
+    webkit-playsinline
+    muted
+    crossorigin="anonymous"
+  ></video>
 
-<a-scene
-  mindar-image="imageTargetSrc: assets/targets.mind;"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  cursor="rayOrigin: mouse"
-raycaster="objects: .clickable"
->
+  <!-- AR Scene -->
+  <a-scene
+    mindar-image="imageTargetSrc: assets/targets.mind;"
+    embedded
+    color-space="sRGB"
+    renderer="precision: mediump"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
 
-  <a-assets>
-    <video 
-      id="video" 
-      src="assets/video.mp4" 
-      preload="auto"
-      playsinline 
-      webkit-playsinline
-      crossorigin="anonymous">
-    </video>
+    <a-assets></a-assets>
 
-    <img id="replayIcon" src="assets/icons/replay.png">
-  </a-assets>
-<a-camera position="0 0 0">
-  <a-cursor
-    rayOrigin="mouse"
-    fuse="false">
-  </a-cursor>
-</a-camera>
-  <a-entity mindar-image-target="targetIndex: 0">
+    <!-- Camera -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false"
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable"
+    ></a-camera>
 
-    <!-- Video -->
-    <a-video
-      id="videoPlane"
-      src="#video"
-      width="1"
-      height="1.83"
-      position="0 0 0.01"
-      material="opacity: 100">
-    </a-video>
+    <!-- Target -->
+    <a-entity mindar-image-target="targetIndex: 0">
 
-   <a-image
-  id="replayBtn3D"
-  class="clickable"
-  src="#replayIcon"
-  width="0.25"
-  height="0.25"
-  position="0 -0.5 0.03"
-  visible="false">
-</a-image>
-  </a-entity>
+      <a-video
+        id="videoPlane"
+        class="clickable"
+        src="#video"
+        width="1"
+        height="1.83"
+        position="0 0 0"
+        material="opacity: 100"
+      ></a-video>
 
-</a-scene>
+    </a-entity>
 
-<script src="main.js"></script>
+  </a-scene>
 
+  <script src="main.js"></script>
 </body>
 </html>
