@@ -1,60 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MindAR Poster</title>
+  <title>MindAR Video Tracking</title>
 
   <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    /* Mute button */
+    #muteButton {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      z-index: 10;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- UI TEXT -->
-  <div id="statusText">Scan artwork</div>
+  <!-- Mute / Unmute Button -->
+  <img id="muteButton" src="assets/icons/mute.png" />
 
-  <!-- MUTE BUTTON -->
-  <div id="audioControl">
-    <img id="audioIcon" src="assets/icons/mute.png" />
-  </div>
+  <!-- Video Asset -->
+  <video
+    id="video"
+    src="assets/video.mp4"
+    preload="auto"
+    loop
+    playsinline
+    webkit-playsinline
+    muted
+    crossorigin="anonymous"
+  ></video>
 
-  <!-- AR SCENE -->
+  <!-- AR Scene -->
   <a-scene
-    mindar-image="imageTargetSrc: assets/targets.mind; autoStart: true;"
-    embedded
+    mindar-image="imageTargetSrc: assets/targets.mind;"
     color-space="sRGB"
     renderer="colorManagement: true, physicallyCorrectLights"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
   >
 
-    <a-assets>
-      <video
-        id="video"
-        src="assets/video.mp4"
-        preload="auto"
-        loop="false"
-        muted
-        playsinline
-        webkit-playsinline
-        crossorigin="anonymous"
-      ></video>
-    </a-assets>
+    <a-assets></a-assets>
 
+    <!-- Camera -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- TARGET -->
-    <a-entity mindar-image-target="targetIndex: 0">
+    <!-- Target -->
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
 
+      <!-- Video Plane -->
       <a-video
         id="videoPlane"
         src="#video"
         width="1"
-        height="0.5625"
+        height="1.83"
         position="0 0 0"
       ></a-video>
 
@@ -62,6 +74,42 @@
 
   </a-scene>
 
-  <script src="main.js"></script>
+  <script>
+    const video = document.querySelector("#video");
+    const target = document.querySelector("#target");
+    const muteBtn = document.querySelector("#muteButton");
+
+    let isMuted = true;
+
+    // ---- TARGET EVENTS ----
+    target.addEventListener("targetFound", () => {
+      video.play();
+    });
+
+    target.addEventListener("targetLost", () => {
+      video.pause();
+    });
+
+    // ---- MUTE TOGGLE ----
+    muteBtn.addEventListener("click", () => {
+      isMuted = !isMuted;
+      video.muted = isMuted;
+
+      muteBtn.src = isMuted
+        ? "assets/icons/mute.png"
+        : "assets/icons/unmute.png";
+    });
+
+    // ---- ENSURE LOOP RELIABILITY ----
+    video.addEventListener("ended", () => {
+      video.play(); // fallback loop
+    });
+
+    // ---- MOBILE AUTOPLAY FIX ----
+    document.body.addEventListener("click", () => {
+      video.play().catch(() => {});
+    });
+  </script>
+
 </body>
 </html>
