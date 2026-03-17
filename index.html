@@ -75,17 +75,7 @@
   <!-- ---- MUTE BUTTON ---- -->
   <img id="muteButton" src="assets/icons/mute.png" />
 
-  <!-- ---- VIDEO ---- -->
-  <video
-    id="video"
-    src="assets/video.mp4"
-    preload="auto"
-    loop
-    playsinline
-    webkit-playsinline
-    muted
-    crossorigin="anonymous"
-  ></video>
+  
 
   <!-- ---- AR SCENE ---- -->
   <a-scene
@@ -95,7 +85,17 @@
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
   >
-
+   <a-assets>
+  <video
+    id="video"
+    src="assets/video.mp4"
+    preload="auto"
+    loop
+    playsinline
+    webkit-playsinline
+    muted
+    crossorigin="anonymous"
+  ></video></a-assets>
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity id="target" mindar-image-target="targetIndex: 0">
@@ -110,43 +110,64 @@
   </a-scene>
 
   <script>
-    const video = document.querySelector("#video");
-    const target = document.querySelector("#target");
-    const muteBtn = document.querySelector("#muteButton");
-    const scanOverlay = document.querySelector("#scanOverlay");
+  const video = document.querySelector("#video");
+  const target = document.querySelector("#target");
+  const muteBtn = document.querySelector("#muteButton");
+  const scanOverlay = document.querySelector("#scanOverlay");
 
-    let isMuted = true;
+  let hideTimeout = null;
 
-    // ---- TARGET EVENTS ----
-    target.addEventListener("targetFound", () => {
-      scanOverlay.style.display = "none";
-      video.play();
-    });
+  // ---- INITIAL STATE ----
+  video.muted = true;
+  muteBtn.style.display = "none";
 
-    target.addEventListener("targetLost", () => {
-      scanOverlay.style.display = "flex";
-      video.pause();
-    });
+  // ---- TARGET FOUND ----
+  target.addEventListener("targetFound", () => {
+    scanOverlay.style.display = "none";
 
-    // ---- MUTE BUTTON ----
-    muteBtn.addEventListener("click", () => {
-      isMuted = false;
-      video.muted = false;
+    // show mute icon (audio OFF state)
+    muteBtn.src = "assets/icons/mute.png";
+    muteBtn.style.display = "block";
 
-      // hide button after unmute
+    video.play();
+  });
+
+  // ---- TARGET LOST ----
+  target.addEventListener("targetLost", () => {
+    scanOverlay.style.display = "flex";
+
+    video.pause();
+
+    // hide button and clear timer
+    muteBtn.style.display = "none";
+    clearTimeout(hideTimeout);
+  });
+
+  // ---- BUTTON CLICK ----
+  muteBtn.addEventListener("click", () => {
+    // switch to audio ON
+    video.muted = false;
+    muteBtn.src = "assets/icons/unmute.png";
+
+    // clear any previous timer
+    clearTimeout(hideTimeout);
+
+    // hide after 3 seconds
+    hideTimeout = setTimeout(() => {
       muteBtn.style.display = "none";
-    });
+    }, 3000);
+  });
 
-    // ---- LOOP SAFETY ----
-    video.addEventListener("ended", () => {
-      video.play();
-    });
+  // ---- LOOP SAFETY ----
+  video.addEventListener("ended", () => {
+    video.play();
+  });
 
-    // ---- MOBILE AUTOPLAY FIX ----
-    document.body.addEventListener("click", () => {
-      video.play().catch(() => {});
-    });
-  </script>
+  // ---- MOBILE AUTOPLAY FIX ----
+  document.body.addEventListener("click", () => {
+    video.play().catch(() => {});
+  });
+</script>
 
 </body>
 </html>
