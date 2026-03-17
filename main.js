@@ -17,7 +17,13 @@ document.querySelector("a-scene").addEventListener("renderstart", () => {
   const target = document.querySelector("[mindar-image-target]");
 
   target.addEventListener("targetFound", () => {
-
+    
+  video.currentTime = 0;
+  video.play();
+  
+  video.addEventListener('play', () => {
+    videoPlane.components.material.material.map.needsUpdate = true;
+  });
     // UI updates
     scanEffect.style.display = "none";
     scanMsg.innerText = "Ready";
