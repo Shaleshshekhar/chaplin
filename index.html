@@ -14,31 +14,7 @@
       overflow: hidden;
       font-family: sans-serif;
     }
-/* ---- SCAN TEXT (GLASS UI) ---- */
-#scanText {
-  position: absolute;
-  bottom: 8%;
-  left: 50%;
-  transform: translateX(-50%);
 
-  padding: 10px 18px;
-  border-radius: 14px;
-
-  color: white;
-  font-size: 14px;
-  letter-spacing: 0.3px;
-
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-
-  text-align: center;
-  white-space: nowrap;
-}
     /* ---- MUTE BUTTON ---- */
     #muteButton {
       position: absolute;
@@ -62,16 +38,94 @@
       align-items: center;
     }
 
-    #scanOverlay img {
-      width: 60%;
-      opacity: 0.7;
+    /* ---- TARGET WRAPPER ---- */
+    #scanTarget {
+      position: relative;
+      width: 52%;
     }
-    @media (max-width: 600px) {
-  #scanText {
-    font-size: 12px;
-    padding: 8px 14px;
-  }
-}
+
+    #scanTarget img {
+      width: 100%;
+      display: block;
+      opacity: 0.65;
+    }
+
+    /* ---- SCAN FRAME ---- */
+    #scanFrame {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 0 8px rgba(255,255,255,0.5);
+      animation: cornerPulse 2s ease-in-out infinite;
+    }
+
+    .corner.tl {
+      top: -6px;
+      left: -6px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .corner.tr {
+      top: -6px;
+      right: -6px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .corner.bl {
+      bottom: -6px;
+      left: -6px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .corner.br {
+      bottom: -6px;
+      right: -6px;
+      border-left: none;
+      border-top: none;
+    }
+
+    @keyframes cornerPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* ---- SCAN TEXT ---- */
+    #scanText {
+      position: absolute;
+      bottom: 7%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      padding: 12px 20px;
+      border-radius: 16px;
+
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+
+      text-align: center;
+      white-space: nowrap;
+    }
+
     /* ---- SWEEP ANIMATION ---- */
     #sweep {
       position: absolute;
@@ -90,59 +144,23 @@
       0%   { transform: translateY(-100%); }
       100% { transform: translateY(100%); }
     }
-    /* ---- SCAN FRAME ---- */
-#scanFrame {
-  position: absolute;
-  width: 60%;   /* match your image width */
-  aspect-ratio: 1 / 1.4; /* adjust if needed to match artwork */
-  pointer-events: none;
-}
 
-/* base corner style */
-.corner {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border: 2px solid rgba(255,255,255,0.8);
-}
+    /* ---- MOBILE ---- */
+    @media (max-width: 600px) {
+      #scanTarget {
+        width: 70%;
+      }
 
-/* remove inner sides to create L-shape */
-.corner.tl {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
-}
+      .corner {
+        width: 22px;
+        height: 22px;
+      }
 
-.corner.tr {
-  top: 0;
-  right: 0;
-  border-left: none;
-  border-bottom: none;
-}
-
-.corner.bl {
-  bottom: 0;
-  left: 0;
-  border-right: none;
-  border-top: none;
-}
-
-.corner.br {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
-}
-
-    .corner {
-  animation: cornerPulse 2s ease-in-out infinite;
-}
-
-@keyframes cornerPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
+      #scanText {
+        font-size: 14px;
+        padding: 10px 16px;
+      }
+    }
   </style>
 </head>
 
@@ -150,21 +168,26 @@
 
   <!-- ---- CUSTOM SCAN UI ---- -->
   <div id="scanOverlay">
-    <img src="assets/target-overlay.jpg" />    
-  <div id="scanFrame">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-  </div>
+
+    <div id="scanTarget">
+      <img src="assets/target-overlay.jpg" />
+
+      <div id="scanFrame">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+      </div>
+    </div>
+
     <div id="scanText">Scan the artwork</div>
+
     <div id="sweep"></div>
+
   </div>
 
   <!-- ---- MUTE BUTTON ---- -->
   <img id="muteButton" src="assets/icons/mute.png" />
-
-  
 
   <!-- ---- AR SCENE ---- -->
   <a-scene
@@ -174,17 +197,20 @@
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
   >
-   <a-assets>
-  <video
-    id="video"
-    src="assets/video.mp4"
-    preload="auto"
-    loop
-    playsinline
-    webkit-playsinline
-    muted
-    crossorigin="anonymous"
-  ></video></a-assets>
+
+    <a-assets>
+      <video
+        id="video"
+        src="assets/video.mp4"
+        preload="auto"
+        loop
+        playsinline
+        webkit-playsinline
+        muted
+        crossorigin="anonymous"
+      ></video>
+    </a-assets>
+
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity id="target" mindar-image-target="targetIndex: 0">
@@ -199,64 +225,59 @@
   </a-scene>
 
   <script>
-  const video = document.querySelector("#video");
-  const target = document.querySelector("#target");
-  const muteBtn = document.querySelector("#muteButton");
-  const scanOverlay = document.querySelector("#scanOverlay");
+    const video = document.querySelector("#video");
+    const target = document.querySelector("#target");
+    const muteBtn = document.querySelector("#muteButton");
+    const scanOverlay = document.querySelector("#scanOverlay");
 
-  let hideTimeout = null;
+    let hideTimeout = null;
 
-  // ---- INITIAL STATE ----
-  video.muted = true;
-  muteBtn.style.display = "none";
-
-  // ---- TARGET FOUND ----
-  target.addEventListener("targetFound", () => {
-    scanOverlay.style.display = "none";
-
-    // show mute icon (audio OFF state)
-    muteBtn.src = "assets/icons/mute.png";
-    muteBtn.style.display = "block";
-
-    video.play();
-  });
-
-  // ---- TARGET LOST ----
-  target.addEventListener("targetLost", () => {
-    scanOverlay.style.display = "flex";
-
-    video.pause();
-
-    // hide button and clear timer
+    // INITIAL
+    video.muted = true;
     muteBtn.style.display = "none";
-    clearTimeout(hideTimeout);
-  });
 
-  // ---- BUTTON CLICK ----
-  muteBtn.addEventListener("click", () => {
-    // switch to audio ON
-    video.muted = false;
-    muteBtn.src = "assets/icons/unmute.png";
+    // TARGET FOUND
+    target.addEventListener("targetFound", () => {
+      scanOverlay.style.display = "none";
 
-    // clear any previous timer
-    clearTimeout(hideTimeout);
+      muteBtn.src = "assets/icons/mute.png";
+      muteBtn.style.display = "block";
 
-    // hide after 3 seconds
-    hideTimeout = setTimeout(() => {
+      video.play();
+    });
+
+    // TARGET LOST
+    target.addEventListener("targetLost", () => {
+      scanOverlay.style.display = "flex";
+
+      video.pause();
+
       muteBtn.style.display = "none";
-    }, 3000);
-  });
+      clearTimeout(hideTimeout);
+    });
 
-  // ---- LOOP SAFETY ----
-  video.addEventListener("ended", () => {
-    video.play();
-  });
+    // CLICK AUDIO
+    muteBtn.addEventListener("click", () => {
+      video.muted = false;
+      muteBtn.src = "assets/icons/unmute.png";
 
-  // ---- MOBILE AUTOPLAY FIX ----
-  document.body.addEventListener("click", () => {
-    video.play().catch(() => {});
-  });
-</script>
+      clearTimeout(hideTimeout);
+
+      hideTimeout = setTimeout(() => {
+        muteBtn.style.display = "none";
+      }, 3000);
+    });
+
+    // LOOP SAFETY
+    video.addEventListener("ended", () => {
+      video.play();
+    });
+
+    // MOBILE AUTOPLAY FIX
+    document.body.addEventListener("click", () => {
+      video.play().catch(() => {});
+    });
+  </script>
 
 </body>
 </html>
