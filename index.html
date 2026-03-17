@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
   <!-- UI Overlay -->
   <div id="ui">
@@ -33,12 +33,11 @@
 
   <!-- AR Scene -->
   <a-scene
-    mindar-image="imageTargetSrc: assets/targets.mind;"
+    mindar-image="imageTargetSrc: assets/targets.mind; autoStart: true;"
     embedded
-    color-space="sRGB"
-    renderer="precision: mediump"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
+    renderer="colorManagement: true, physicallyCorrectLights"
   >
 
     <a-assets></a-assets>
@@ -61,7 +60,7 @@
         width="1"
         height="1.83"
         position="0 0 0"
-        material="opacity: 100"
+        material="opacity: 0"
       ></a-video>
 
     </a-entity>
