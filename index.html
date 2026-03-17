@@ -2,12 +2,9 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR Poster</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -21,23 +18,31 @@
   <div id="scan-message">Scan artwork</div>
   <div id="scan-effect"></div>
 
+  <!-- Screen-space mute -->
   <img id="muteBtn" src="assets/icons/mute.png">
-  <img id="replayBtn" src="assets/icons/replay.png">
 </div>
 
 <a-scene
+  mindar-image="imageTargetSrc: assets/targets.mind;"
   embedded
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true;"
-  mindar-image="imageTargetSrc: assets/targets.mind;"
 >
 
   <a-assets>
-    <video id="video" src="assets/video.mp4" preload="auto" playsinline></video>
+    <video 
+      id="video" 
+      src="assets/video.mp4" 
+      preload="auto"
+      playsinline 
+      webkit-playsinline
+      crossorigin="anonymous">
+    </video>
+
+    <img id="replayIcon" src="assets/icons/replay.png">
   </a-assets>
 
-  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-camera position="0 0 0"></a-camera>
 
   <a-entity mindar-image-target="targetIndex: 0">
 
@@ -46,10 +51,19 @@
       id="videoPlane"
       src="#video"
       width="1"
-      height="1.83"
-      position="0 0 0"
+      position="0 0 0.01"
       material="opacity: 100">
     </a-video>
+
+    <!-- World-space Replay -->
+    <a-image
+      id="replayBtn3D"
+      src="#replayIcon"
+      width="0.2"
+      height="0.2"
+      position="0 -0.5 0.02"
+      visible="false">
+    </a-image>
 
   </a-entity>
 
