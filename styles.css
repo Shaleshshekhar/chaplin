@@ -26,17 +26,18 @@ a-scene {
 /* Scan Message */
 #scan-message {
   position: absolute;
-  top: 30px;
+  bottom: 30%; /* ← key change */
   width: 100%;
   text-align: center;
-  color: rgba(255,255,255,0.9);
 
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 
-  opacity: 0.9;
+  opacity: 1;
+  transition: opacity 0.4s;
 }
 
 #scan-message::before {
