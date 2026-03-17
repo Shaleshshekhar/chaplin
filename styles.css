@@ -1,0 +1,91 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+#ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Scan Message */
+#scan-message {
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  opacity: 0.9;
+}
+
+#scan-message::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -6px;
+
+  width: 200px;
+  height: 28px;
+
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  z-index: -1;
+}
+
+/* Ripple Scan Effect */
+#scan-effect {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#scan-effect::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 200px;
+  height: 200px;
+
+  border: 1px solid rgba(0,255,255,0.3);
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+  animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Buttons */
+#muteBtn, #replayBtn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+}
